@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>F1 Strategy Lab</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #08090c;
+    --panel: #111318;
+    --panel2: #171920;
+    --border: #292d36;
+    --text: #f5f5f5;
+    --muted: #9297a3;
+    --red: #e10600;
+    --green: #39d98a;
+    --yellow: #f5c542;
+    --blue: #4da3ff;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+    font-family: inherit;
+}
+
+.app {
+    max-width: 1250px;
+    margin: auto;
+    padding: 18px;
+}
+
+/* HEADER */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--red);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.logo span {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+.race-status {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--green);
+}
+
+/* MAIN GRID */
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 16px;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.panel-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.panel-title h2 {
+    font-size: 15px;
+    margin: 0;
+}
+
+.panel-title span {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* RACE */
+
+.race-card {
+    margin-bottom: 16px;
+}
+
+.race-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.race-name {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.race-meta {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.lap-number {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.lap-number small {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: normal;
+}
+
+/* TELEMETRY */
+
+.telemetry {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.stat {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 7px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.stat-sub {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+/* TYRE */
+
+.tyre-box {
+    margin-top: 15px;
+    background: var(--panel2);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.tyre-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tyre-name {
+    font-weight: bold;
+}
+
+.tyre-compound {
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.soft {
+    background: #8e1818;
+    color: #fff;
+}
+
+.medium {
+    background: #9c8b20;
+    color: #fff;
+}
+
+.hard {
+    background: #777;
+    color: #fff;
+}
+
+.inter {
+    background: #168f52;
+    color: #fff;
+}
+
+.progress {
+    height: 8px;
+    background: #292d36;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 13px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 70%;
+    background: var(--green);
+    transition: width .4s ease;
+}
+
+/* WEATHER */
+
+.weather {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.weather-item {
+    background: var(--panel2);
+    padding: 14px;
+    border-radius: 10px;
+}
+
+.weather-item strong {
+    display: block;
+    margin-top: 6px;
+}
+
+/* STRATEGY */
+
+.strategy-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.strategy-btn {
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    color: white;
+    border-radius: 9px;
+    padding: 13px 5px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.strategy-btn:hover {
+    border-color: white;
+    transform: translateY(-1px);
+}
+
+.strategy-btn strong {
+    display: block;
+    font-size: 12px;
+}
+
+.strategy-btn span {
+    display: block;
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* DECISION */
+
+.decision-box {
+    margin-top: 12px;
+}
+
+.decision-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.action {
+    border: 0;
+    border-radius: 10px;
+    padding: 16px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pit {
+    background: var(--red);
+}
+
+.stay {
+    background: #292d36;
+}
+
+.action:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+/* RIGHT COLUMN */
+
+.position-card {
+    background: var(--panel2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.driver {
+    display: grid;
+    grid-template-columns: 35px 1fr 70px;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.driver:last-child {
+    border-bottom: 0;
+}
+
+.driver.me {
+    background: rgba(225,6,0,.12);
+}
+
+.position {
+    font-weight: bold;
+    color: var(--muted);
+}
+
+.driver-name {
+    font-weight: bold;
+}
+
+.driver-team {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+.gap {
+    text-align: right;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* TIMELINE */
+
+.timeline {
+    max-height: 270px;
+    overflow-y: auto;
+}
+
+.event {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.event:last-child {
+    border-bottom: 0;
+}
+
+.event-time {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+/* ANALYSIS */
+
+.analysis {
+    margin-top: 16px;
+}
+
+.analysis-box {
+    background: var(--panel2);
+    border-radius: 10px;
+    padding: 15px;
+    line-height: 1.6;
+    font-size: 13px;
+}
+
+.score {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.good {
+    color: var(--green);
+}
+
+.average {
+    color: var(--yellow);
+}
+
+/* BOTTOM */
+
+.bottom {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.bottom button {
+    flex: 1;
+    padding: 13px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: white;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    color: #555b66;
+    font-size: 10px;
+    margin: 20px 0;
+}
+
+/* MOBILE */
+
+@media(max-width: 800px) {
+
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .telemetry {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .weather {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .strategy-buttons {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .race-name {
+        font-size: 21px;
+    }
+}
+
+@media(max-width: 450px) {
+
+    .app {
+        padding: 10px;
+    }
+
+    .panel {
+        padding: 14px;
+    }
+
+    .weather {
+        grid-template-columns: 1fr;
+    }
+
+    .race-top {
+        align-items: flex-start;
+    }
+
+    .lap-number {
+        font-size: 24px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+    <div class="logo">
+        <div class="logo-mark">🏁</div>
+
+        <div>
+            <h1>F1 Strategy Lab</h1>
+            <span>Think like the pit wall.</span>
+        </div>
+    </div>
+
+    <div class="race-status" id="status">
+        ● RACE LIVE
+    </div>
+
+</header>
+
+
+<div class="dashboard">
+
+<!-- LEFT -->
+
+<main>
+
+<div class="panel race-card">
+
+    <div class="race-top">
+
+        <div>
+            <div class="race-name">Strategy Challenge</div>
+            <div class="race-meta">
+                Dry start · Variable weather · 58 laps
+            </div>
+        </div>
+
+        <div class="lap-number">
+            <span id="lap">28</span>/58
+            <small>LAP</small>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="panel">
+
+    <div class="panel-title">
+        <h2>LIVE TELEMETRY</h2>
+        <span>YOUR CAR</span>
+    </div>
+
+    <div class="telemetry">
+
+        <div class="stat">
+            <div class="stat-label">Position</div>
+            <div class="stat-value" id="position">P3</div>
+            <div class="stat-sub">Race position</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Gap Ahead</div>
+            <div class="stat-value" id="gapAhead">+2.4s</div>
+            <div class="stat-sub">To P2</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Gap Behind</div>
+            <div class="stat-value" id="gapBehind">+3.1s</div>
+            <div class="stat-sub">To P4</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Fuel</div>
+            <div class="stat-value" id="fuel">54%</div>
+            <div class="stat-sub">Remaining</div>
+        </div>
+
+    </div>
+
+
+    <div class="tyre-box">
+
+        <div class="tyre-header">
+
+            <div>
+                <div class="stat-label">CURRENT TYRE</div>
+
+                <div class="tyre-name">
+                    <span id="tyre">MEDIUM</span>
+                    ·
+                    <span id="tyreAge">14</span> laps
+                </div>
+            </div>
+
+            <div
+                class="tyre-compound medium"
+                id="compound">
+                MEDIUM
+            </div>
+
+        </div>
+
+        <div class="progress">
+            <div
+                class="progress-bar"
+                id="tyreBar">
+            </div>
+        </div>
+
+        <div
+            class="stat-sub"
+            id="tyreCondition">
+            Tyre performance: 76%
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="panel" style="margin-top:16px;">
+
+    <div class="panel-title">
+        <h2>WEATHER</h2>
+        <span id="weatherStatus">TRACK DRY</span>
+    </div>
+
+    <div class="weather">
+
+        <div class="weather-item">
+            🌡️
+            <strong id="trackTemp">31°C</strong>
+            <span class="stat-sub">Track</span>
+        </div>
+
+        <div class="weather-item">
+            🌧️
+            <strong id="rainChance">38%</strong>
+            <span class="stat-sub">Rain chance</span>
+        </div>
+
+        <div class="weather-item">
+            💧
+            <strong id="humidity">61%</strong>
+            <span class="stat-sub">Humidity</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="panel" style="margin-top:16px;">
+
+    <div class="panel-title">
+        <h2>YOUR STRATEGY</h2>
+        <span>CHOOSE TYRE</span>
+    </div>
+
+    <div class="strategy-buttons">
+
+        <button class="strategy-btn" onclick="selectTyre('soft')">
+            🔴
+            <strong>SOFT</strong>
+            <span>Fast · Short life</span>
+        </button>
+
+        <button class="strategy-btn" onclick="selectTyre('medium')">
+            🟡
+            <strong>MEDIUM</strong>
+            <span>Balanced</span>
+        </button>
+
+        <button class="strategy-btn" onclick="selectTyre('hard')">
+            ⚪
+            <strong>HARD</strong>
+            <span>Slow · Long life</span>
+        </button>
+
+        <button class="strategy-btn" onclick="selectTyre('inter')">
+            🟢
+            <strong>INTER</strong>
+            <span>Wet conditions</span>
+        </button>
+
+    </div>
+
+
+    <div class="decision-box">
+
+        <div class="decision-buttons">
+
+            <button
+                class="action pit"
+                id="pitButton"
+                onclick="makeDecision('pit')">
+                🛠 PIT NOW
+            </button>
+
+            <button
+                class="action stay"
+                id="stayButton"
+                onclick="makeDecision('stay')">
+                🏎 STAY OUT
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="analysis">
+
+<div class="panel">
+
+    <div class="panel-title">
+        <h2>STRATEGY ANALYSIS</h2>
+        <span id="analysisLabel">LIVE</span>
+    </div>
+
+    <div class="analysis-box" id="analysis">
+
+        <div class="score">—</div>
+
+        Make your first strategy decision.
+
+        <br><br>
+
+        <span style="color:#9297a3">
+        Watch tyre degradation, weather and gaps.
+        Every decision changes the race.
+        </span>
+
+    </div>
+
+</div>
+
+</div>
+
+</main>
+
+
+<!-- RIGHT -->
+
+<aside>
+
+<div class="panel">
+
+    <div class="panel-title">
+        <h2>LIVE STANDINGS</h2>
+        <span>SIMULATION</span>
+    </div>
+
+    <div class="position-card" id="standings">
+
+        <div class="driver">
+            <div class="position">1</div>
+
+            <div>
+                <div class="driver-name">R. Novak</div>
+                <div class="driver-team">Apex Racing</div>
+            </div>
+
+            <div class="gap">+0.0s</div>
+        </div>
+
+
+        <div class="driver">
+            <div class="position">2</div>
+
+            <div>
+                <div class="driver-name">L. Costa</div>
+                <div class="driver-team">Vortex GP</div>
+            </div>
+
+            <div class="gap">+1.7s</div>
+        </div>
+
+
+        <div class="driver me">
+            <div class="position">3</div>
+
+            <div>
+                <div class="driver-name">YOU</div>
+                <div class="driver-team">Strategy Lab Racing</div>
+            </div>
+
+            <div class="gap">+2.4s</div>
+        </div>
+
+
+        <div class="driver">
+            <div class="position">4</div>
+
+            <div>
+                <div class="driver-name">D. Mercer</div>
+                <div class="driver-team">Titan Motorsport</div>
+            </div>
+
+            <div class="gap">+5.5s</div>
+        </div>
+
+
+        <div class="driver">
+            <div class="position">5</div>
+
+            <div>
+                <div class="driver-name">A. Rossi</div>
+                <div class="driver-team">Falcon Racing</div>
+            </div>
+
+            <div class="gap">+8.2s</div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="panel" style="margin-top:16px;">
+
+    <div class="panel-title">
+        <h2>RACE TIMELINE</h2>
+        <span>LIVE EVENTS</span>
+    </div>
+
+    <div class="timeline" id="timeline">
+
+        <div class="event">
+            <div class="event-time">LAP 27</div>
+            DRS enabled. Gap to P2 remains stable.
+        </div>
+
+        <div class="event">
+            <div class="event-time">LAP 26</div>
+            Tyre degradation increasing.
+        </div>
+
+        <div class="event">
+            <div class="event-time">LAP 24</div>
+            Rain probability increased to 38%.
+        </div>
+
+        <div class="event">
+            <div class="event-time">LAP 21</div>
+            P4 enters the pit lane.
+        </div>
+
+    </div>
+
+</div>
+
+</aside>
+
+</div>
+
+
+<div class="bottom">
+
+    <button onclick="restartRace()">
+        ↻ Restart Race
+    </button>
+
+    <button onclick="finishRace()">
+        🏁 Finish Simulation
+    </button>
+
+</div>
+
+
+<footer>
+    F1 Strategy Lab · Prototype simulation · Not affiliated with Formula 1
+</footer>
+
+</div>
+
+
+<script>
+
+/* =========================
+   GAME STATE
+========================= */
+
+let game = {
+
+    lap: 28,
+
+    maxLap: 58,
+
+    position: 3,
+
+    gapAhead: 2.4,
+
+    gapBehind: 3.1,
+
+    fuel: 54,
+
+    tyre: "medium",
+
+    tyreAge: 14,
+
+    tyrePerformance: 76,
+
+    rainChance: 38,
+
+    trackTemp: 31,
+
+    humidity: 61,
+
+    wet: false,
+
+    pitStops: 0,
+
+    strategy: [],
+
+    decisions: [],
+
+    finished: false
+
+};
+
+
+/* =========================
+   TYRE DATA
+========================= */
+
+const tyres = {
+
+    soft: {
+        name: "SOFT",
+        life: 18,
+        pace: 1.8,
+        degradation: 2.4
+    },
+
+    medium: {
+        name: "MEDIUM",
+        life: 28,
+        pace: 1.0,
+        degradation: 1.25
+    },
+
+    hard: {
+        name: "HARD",
+        life: 38,
+        pace: 0.4,
+        degradation: 0.75
+    },
+
+    inter: {
+        name: "INTER",
+        life: 25,
+        pace: -1.0,
+        degradation: 1.1
+    }
+
+};
+
+
+/* =========================
+   SELECT TYRE
+========================= */
+
+function selectTyre(type) {
+
+    game.tyre = type;
+
+    addEvent(
+        "TYRE SELECTED",
+        "You selected " +
+        tyres[type].name +
+        " tyres."
+    );
+
+}
+
+
+/* =========================
+   MAIN DECISION
+========================= */
+
+function makeDecision(decision) {
+
+    if (game.finished) return;
+
+    game.decisions.push({
+        lap: game.lap,
+        decision: decision,
+        tyre: game.tyre
+    });
+
+
+    if (decision === "pit") {
+
+        game.pitStops++;
+
+        game.tyreAge = 0;
+
+        game.tyrePerformance = 100;
+
+        game.position = Math.min(
+            5,
+            game.position + 1
+        );
+
+        game.gapBehind += 1.8;
+
+        addEvent(
+            "PIT STOP",
+            "You pitted and fitted " +
+            tyres[game.tyre].name +
+            " tyres. Pit loss: 22.0s."
+        );
+
+    } else {
+
+        game.tyreAge++;
+
+        game.tyrePerformance -=
+            tyres[game.tyre].degradation;
+
+        game.tyrePerformance =
+            Math.max(
+                25,
+                game.tyrePerformance
+            );
+
+        addEvent(
+            "STAY OUT",
+            "You stayed on " +
+            tyres[game.tyre].name +
+            " tyres."
+        );
+
+    }
+
+
+    advanceLap();
+
+}
+
+
+/* =========================
+   ADVANCE RACE
+========================= */
+
+function advanceLap() {
+
+    game.lap++;
+
+    game.fuel =
+        Math.max(
+            0,
+            game.fuel - 1.1
+        );
+
+
+    /* tyre degradation */
+
+    game.tyreAge++;
+
+    game.tyrePerformance -=
+        tyres[game.tyre].degradation;
+
+    game.tyrePerformance =
+        Math.max(
+            20,
+            game.tyrePerformance
+        );
+
+
+    /* weather */
+
+    if (Math.random() < 0.18) {
+
+        game.rainChance +=
+            Math.floor(Math.random() * 9) - 3;
+
+    }
+
+    game.rainChance =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                game.rainChance
+            )
+        );
+
+
+    if (
+        game.rainChance > 75 &&
+        Math.random() < 0.25
+    ) {
+
+        game.wet = true;
+
+        addEvent(
+            "RAIN",
+            "Rain has reached the circuit. Intermediates are now valuable."
+        );
+
+    }
+
+
+    /* gaps */
+
+    const paceEffect =
+        (game.tyrePerformance - 70) / 25;
+
+    game.gapAhead +=
+        (Math.random() * 1.2 - 0.6)
+        - paceEffect * 0.3;
+
+    game.gapBehind +=
+        (Math.random() * 1.0 - 0.5)
+        + paceEffect * 0.25;
+
+
+    game.gapAhead =
+        Math.max(
+            0.5,
+            game.gapAhead
+        );
+
+    game.gapBehind =
+        Math.max(
+            0.5,
+            game.gapBehind
+        );
+
+
+    /* overtakes */
+
+    if (game.gapBehind < 1.0) {
+
+        game.position =
+            Math.min(
+                5,
+                game.position + 1
+            );
+
+        game.gapBehind = 2.0;
+
+        addEvent(
+            "UNDER PRESSURE",
+            "The car behind has closed in."
+        );
+
+    }
+
+
+    if (
+        game.gapAhead < 0.8 &&
+        Math.random() < 0.25
+    ) {
+
+        game.position =
+            Math.max(
+                1,
+                game.position - 1
+            );
+
+        game.gapAhead = 1.7;
+
+        addEvent(
+            "OVERTAKE",
+            "You gained a position."
+        );
+
+    }
+
+
+    if (game.lap >= game.maxLap) {
+
+        finishRace();
+
+    }
+
+
+    updateUI();
+
+}
+
+
+/* =========================
+   EVENTS
+========================= */
+
+function addEvent(title, message) {
+
+    const timeline =
+        document.getElementById("timeline");
+
+    const event =
+        document.createElement("div");
+
+    event.className = "event";
+
+    event.innerHTML = `
+        <div class="event-time">
+            LAP ${game.lap} · ${title}
+        </div>
+
+        ${message}
+    `;
+
+    timeline.prepend(event);
+
+}
+
+
+/* =========================
+   UI
+========================= */
+
+function updateUI() {
+
+    document.getElementById("lap")
+        .textContent = game.lap;
+
+    document.getElementById("position")
+        .textContent = "P" + game.position;
+
+    document.getElementById("gapAhead")
+        .textContent =
+        "+" +
+        game.gapAhead.toFixed(1) +
+        "s";
+
+    document.getElementById("gapBehind")
+        .textContent =
+        "+" +
+        game.gapBehind.toFixed(1) +
+        "s";
+
+    document.getElementById("fuel")
+        .textContent =
+        Math.round(game.fuel) +
+        "%";
+
+
+    document.getElementById("tyre")
+        .textContent =
+        tyres[game.tyre].name;
+
+    document.getElementById("tyreAge")
+        .textContent =
+        game.tyreAge;
+
+
+    const compound =
+        document.getElementById("compound");
+
+    compound.textContent =
+        tyres[game.tyre].name;
+
+    compound.className =
+        "tyre-compound " +
+        game.tyre;
+
+
+    document.getElementById("tyreBar")
+        .style.width =
+        game.tyrePerformance + "%";
+
+
+    document.getElementById("tyreCondition")
+        .textContent =
+        "Tyre performance: " +
+        Math.round(game.tyrePerformance) +
+        "%";
+
+
+    document.getElementById("rainChance")
+        .textContent =
+        Math.round(game.rainChance) +
+        "%";
+
+
+    document.getElementById("trackTemp")
+        .textContent =
+        game.trackTemp +
+        "°C";
+
+
+    document.getElementById("humidity")
+        .textContent =
+        game.humidity +
+        "%";
+
+
+    document.getElementById("weatherStatus")
+        .textContent =
+        game.wet
+        ? "WET TRACK"
+        : "TRACK DRY";
+
+
+    updateStandings();
+
+}
+
+
+/* =========================
+   STANDINGS
+========================= */
+
+function updateStandings() {
+
+    const drivers = [
+
+        {
+            pos: game.position,
+            name: "YOU",
+            team: "Strategy Lab Racing",
+            gap: game.gapAhead
+        },
+
+        {
+            pos: game.position === 1
+                ? 2
+                : 1,
+
+            name: "R. Novak",
+            team: "Apex Racing",
+            gap: 0
+        },
+
+        {
+            pos: game.position === 3
+                ? 2
+                : 3,
+
+            name: "L. Costa",
+            team: "Vortex GP",
+            gap: 1.7
+        },
+
+        {
+            pos: 4,
+            name: "D. Mercer",
+            team: "Titan Motorsport",
+            gap: game.gapBehind
+        },
+
+        {
+            pos: 5,
+            name: "A. Rossi",
+            team: "Falcon Racing",
+            gap: 8.2
+        }
+
+    ];
+
+
+    drivers.sort(
+        (a,b) => a.pos - b.pos
+    );
+
+
+    const container =
+        document.getElementById("standings");
+
+    container.innerHTML = "";
+
+
+    drivers.forEach(driver => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "driver " +
+            (driver.name === "YOU"
+                ? "me"
+                : "");
+
+        div.innerHTML = `
+
+            <div class="position">
+                ${driver.pos}
+            </div>
+
+            <div>
+
+                <div class="driver-name">
+                    ${driver.name}
+                </div>
+
+                <div class="driver-team">
+                    ${driver.team}
+                </div>
+
+            </div>
+
+            <div class="gap">
+
+                ${
+                    driver.pos === 1
+                    ? "+0.0s"
+                    : "+" + driver.gap.toFixed(1) + "s"
+                }
+
+            </div>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   ANALYSIS
+========================= */
+
+function finishRace() {
+
+    if (game.finished) return;
+
+    game.finished = true;
+
+    document.getElementById("status")
+        .textContent =
+        "● RACE FINISHED";
+
+    document.getElementById("status")
+        .style.color =
+        "#9297a3";
+
+
+    let score = 60;
+
+
+    /* reward sensible tyre choice */
+
+    if (
+        game.tyre === "medium" ||
+        game.tyre === "hard"
+    ) {
+
+        score += 10;
+
+    }
+
+
+    /* reward managing tyres */
+
+    if (game.tyrePerformance > 55) {
+
+        score += 10;
+
+    }
+
+
+    /* reward position */
+
+    score +=
+        (5 - game.position) * 4;
+
+
+    /* weather strategy */
+
+    if (
+        game.wet &&
+        game.tyre === "inter"
+    ) {
+
+        score += 10;
+
+    }
+
+
+    score =
+        Math.min(
+            99,
+            Math.max(
+                1,
+                score
+            )
+        );
+
+
+    let message = "";
+
+
+    if (score >= 85) {
+
+        message = `
+            <div class="score good">
+                ${score}/100
+            </div>
+
+            Excellent strategic execution.
+
+            <br><br>
+
+            You managed tyre degradation well,
+            protected your track position and adapted
+            effectively to the changing race conditions.
+
+            <br><br>
+
+            <span style="color:#9297a3">
+            The next challenge is reducing pit-stop
+            losses while maintaining tyre performance.
+            </span>
+        `;
+
+    } else if (score >= 70) {
+
+        message = `
+            <div class="score average">
+                ${score}/100
+            </div>
+
+            Solid strategy with room for improvement.
+
+            <br><br>
+
+            Your decisions were generally reasonable,
+            but there were opportunities to improve
+            the timing of your stops.
+
+            <br><br>
+
+            <span style="color:#9297a3">
+            Study the gaps and tyre degradation more
+            carefully on your next run.
+            </span>
+        `;
+
+    } else {
+
+        message = `
+            <div class="score">
+                ${score}/100
+            </div>
+
+            Risky strategy.
+
+            <br><br>
+
+            Your strategy created unnecessary time loss.
+
+            <br><br>
+
+            <span style="color:#9297a3">
+            Watch tyre degradation, weather probability
+            and the cars around you before committing
+            to your next decision.
+            </span>
+        `;
+
+    }
+
+
+    document.getElementById("analysis")
+        .innerHTML =
+        message;
+
+    document.getElementById("analysisLabel")
+        .textContent =
+        "FINAL";
+
+
+    document.getElementById("pitButton")
+        .disabled = true;
+
+    document.getElementById("stayButton")
+        .disabled = true;
+
+
+    addEvent(
+        "FINISH",
+        "Race complete. Final position: P" +
+        game.position
+    );
+
+}
+
+
+/* =========================
+   RESTART
+========================= */
+
+function restartRace() {
+
+    game = {
+
+        lap: 28,
+
+        maxLap: 58,
+
+        position: 3,
+
+        gapAhead: 2.4,
+
+        gapBehind: 3.1,
+
+        fuel: 54,
+
+        tyre: "medium",
+
+        tyreAge: 14,
+
+        tyrePerformance: 76,
+
+        rainChance: 38,
+
+        trackTemp: 31,
+
+        humidity: 61,
+
+        wet: false,
+
+        pitStops: 0,
+
+        strategy: [],
+
+        decisions: [],
+
+        finished: false
+
+    };
+
+
+    document.getElementById("status")
+        .textContent =
+        "● RACE LIVE";
+
+    document.getElementById("status")
+        .style.color =
+        "#39d98a";
+
+
+    document.getElementById("analysis")
+        .innerHTML = `
+
+            <div class="score">—</div>
+
+            Make your first strategy decision.
+
+            <br><br>
+
+            <span style="color:#9297a3">
+            Watch tyre degradation, weather and gaps.
+            Every decision changes the race.
+            </span>
+        `;
+
+
+    document.getElementById("analysisLabel")
+        .textContent =
+        "LIVE";
+
+
+    document.getElementById("pitButton")
+        .disabled = false;
+
+    document.getElementById("stayButton")
+        .disabled = false;
+
+
+    document.getElementById("timeline")
+        .innerHTML = `
+
+            <div class="event">
+                <div class="event-time">
+                    LAP 28
+                </div>
+
+                Race restarted.
+                Strategy decision required.
+            </div>
+
+        `;
+
+
+    updateUI();
+
+}
+
+
+updateUI();
+
+</script>
+
+</body>
+</html>
